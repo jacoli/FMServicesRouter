@@ -19,25 +19,17 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
     
-    if ([[FMServicesRouter sharedInstance] callService:@"custom.service" withParams:nil successed:^(NSDictionary *responseObj) {
+    [[FMServicesRouter sharedInstance] callService:@"custom.service" withParams:nil successed:^(NSDictionary *responseObj) {
         NSLog(@"Service response success : %@", responseObj);
     } failed:^(NSError *error) {
         NSLog(@"Service response failed.");
-    }]) {
-        NSLog(@"Call service success.");
-    } else {
-        NSLog(@"Call service failed.");
-    }
+    }];
     
-    if ([[FMServicesRouter sharedInstance] callApi:@"api" ofService:@"custom.service" withParams:nil successed:^(NSDictionary *responseObj) {
+    [[FMServicesRouter sharedInstance] callApi:@"api" ofService:@"custom.service" withParams:nil successed:^(NSDictionary *responseObj) {
         NSLog(@"Service response success : %@", responseObj);
     } failed:^(NSError *error) {
         NSLog(@"Service response failed.");
-    }]) {
-        NSLog(@"Call service success.");
-    } else {
-        NSLog(@"Call service failed.");
-    }
+    }];
 }
 
 

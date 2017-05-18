@@ -8,6 +8,8 @@
 
 #import "FMServicesRouter.h"
 
+NSString * const FMServiceNotFoundErrorDomain = @"FMServiceNotFoundErrorDomain";
+
 @interface FMServicesRouterModel : NSObject
 
 @property (nonatomic, strong) id<FMServicesRouterServiceProtocol> service;
@@ -62,33 +64,69 @@
     }
 }
 
-- (BOOL)callService:(NSString *)serviceName withParams:(NSDictionary *)params
+- (void)callService:(NSString *)serviceName withParams:(NSDictionary *)params
           successed:(void(^)(NSDictionary *responseObj))successed failed:(void(^)(NSError *error))failed {
-    if (serviceName) {
-        FMServicesRouterModel *model = self.services[serviceName];
-        if (model && model.service && [model.service respondsToSelector:@selector(serviceCalledWithParams:successed:failed:)]) {
-            [model.service serviceCalledWithParams:params successed:successed failed:failed];
-            return YES;
-        }
+    if (serviceName.length == 0) {
+        [self notifyServiceNotFoundFailed:failed];
+        return;
     }
     
-    return NO;
+    FMServicesRouterModel *model = self.services[serviceName];
+    if (model && model.service && [model.service respondsToSelector:@selector(serviceCalledWithParams:successed:failed:)]) {
+        [model.service serviceCalledWithParams:params successed:^(NSDictionary *responseObj) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                if (successed) {
+                    successed(responseObj);
+                }
+            });
+        } failed:^(NSError *error) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                if (failed) {
+                    failed(error);
+                }
+            });
+        }];
+    } else {
+        [self notifyServiceNotFoundFailed:failed];
+    }
 }
 
-- (BOOL)callApi:(NSString *)apiName
+- (void)callApi:(NSString *)apiName
       ofService:(NSString *)serviceName
      withParams:(NSDictionary *)params
       successed:(void(^)(NSDictionary *responseObj))successed
          failed:(void(^)(NSError *error))failed {
-    if (serviceName) {
-        FMServicesRouterModel *model = self.services[serviceName];
-        if (model && model.service && [model.service respondsToSelector:@selector(serviceCalledWithApiName:params:successed:failed:)]) {
-            [model.service serviceCalledWithApiName:apiName params:params successed:successed failed:failed];
-            return YES;
-        }
+    if (serviceName.length == 0) {
+        [self notifyServiceNotFoundFailed:failed];
+        return;
     }
     
-    return NO;
+    FMServicesRouterModel *model = self.services[serviceName];
+    if (model && model.service && [model.service respondsToSelector:@selector(serviceCalledWithApiName:params:successed:failed:)]) {
+        [model.service serviceCalledWithApiName:apiName params:params successed:^(NSDictionary *responseObj) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                if (successed) {
+                    successed(responseObj);
+                }
+            });
+        } failed:^(NSError *error) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                if (failed) {
+                    failed(error);
+                }
+            });
+        }];
+    } else {
+        [self notifyServiceNotFoundFailed:failed];
+    }
+}
+
+- (void)notifyServiceNotFoundFailed:(void(^)(NSError *error))failed {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if (failed) {
+            failed([NSError errorWithDomain:FMServiceNotFoundErrorDomain code:0 userInfo:@{}]);
+        }
+    });
 }
 
 @end

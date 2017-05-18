@@ -13,12 +13,22 @@
  */
 @protocol FMServicesRouterServiceProtocol <NSObject>
 
+@optional
+
 /**
- * Farword client call to service.
+ * Forwarding client service call to service.
  */
-- (void)calledWithParams:(NSDictionary *)params
-               successed:(void(^)(NSDictionary *responseObj))successed
-                  failed:(void(^)(NSError *error))failed;
+- (void)serviceCalledWithParams:(NSDictionary *)params
+                      successed:(void(^)(NSDictionary *responseObj))successed
+                         failed:(void(^)(NSError *error))failed;
+
+/**
+ * Forwarding client api call to service.
+ */
+- (void)serviceCalledWithApiName:(NSString *)apiName
+                          params:(NSDictionary *)params
+                       successed:(void(^)(NSDictionary *responseObj))successed
+                          failed:(void(^)(NSError *error))failed;
 
 @end
 
@@ -43,11 +53,20 @@
 - (void)unregisterService:(NSString *)serviceName;
 
 /**
- * Call service, return NO if service cann't found, else YES.
+ * Call service, return NO if service cann't found or protocol not implement, else YES.
  */
 - (BOOL)callService:(NSString *)serviceName
          withParams:(NSDictionary *)params
           successed:(void(^)(NSDictionary *responseObj))successed
              failed:(void(^)(NSError *error))failed;
+
+/**
+ * Call api of service, return NO if service cann't found or protocol not implement, else YES.
+ */
+- (BOOL)callApi:(NSString *)apiName
+      ofService:(NSString *)serviceName
+     withParams:(NSDictionary *)params
+      successed:(void(^)(NSDictionary *responseObj))successed
+         failed:(void(^)(NSError *error))failed;
 
 @end

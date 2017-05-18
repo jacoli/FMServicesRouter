@@ -50,7 +50,7 @@
     return self;
 }
 
-- (void)registerServiceInstance:(__weak id<FMServicesRouterServiceProtocol>)serviceInstance withName:(NSString *)serviceName {
+- (void)registerServiceInstance:(id<FMServicesRouterServiceProtocol>)serviceInstance withName:(NSString *)serviceName {
     if (serviceInstance && serviceName.length > 0) {
         self.services[serviceName] = [FMServicesRouterModel modelWithService:serviceInstance];
     }
@@ -66,8 +66,24 @@
           successed:(void(^)(NSDictionary *responseObj))successed failed:(void(^)(NSError *error))failed {
     if (serviceName) {
         FMServicesRouterModel *model = self.services[serviceName];
-        if (model && model.service) {
-            [model.service calledWithParams:params successed:successed failed:failed];
+        if (model && model.service && [model.service respondsToSelector:@selector(serviceCalledWithParams:successed:failed:)]) {
+            [model.service serviceCalledWithParams:params successed:successed failed:failed];
+            return YES;
+        }
+    }
+    
+    return NO;
+}
+
+- (BOOL)callApi:(NSString *)apiName
+      ofService:(NSString *)serviceName
+     withParams:(NSDictionary *)params
+      successed:(void(^)(NSDictionary *responseObj))successed
+         failed:(void(^)(NSError *error))failed {
+    if (serviceName) {
+        FMServicesRouterModel *model = self.services[serviceName];
+        if (model && model.service && [model.service respondsToSelector:@selector(serviceCalledWithApiName:params:successed:failed:)]) {
+            [model.service serviceCalledWithApiName:apiName params:params successed:successed failed:failed];
             return YES;
         }
     }

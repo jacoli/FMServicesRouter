@@ -28,6 +28,16 @@
     } else {
         NSLog(@"Call service failed.");
     }
+    
+    if ([[FMServicesRouter sharedInstance] callApi:@"api" ofService:@"custom.service" withParams:nil successed:^(NSDictionary *responseObj) {
+        NSLog(@"Service response success : %@", responseObj);
+    } failed:^(NSError *error) {
+        NSLog(@"Service response failed.");
+    }]) {
+        NSLog(@"Call service success.");
+    } else {
+        NSLog(@"Call service failed.");
+    }
 }
 
 

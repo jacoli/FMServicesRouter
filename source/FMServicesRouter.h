@@ -35,7 +35,12 @@
 /**
  * Register service instance.
  */
-- (void)registerServiceInstance:(__weak id<FMServicesRouterServiceProtocol>)serviceInstance withName:(NSString *)serviceName;
+- (void)registerServiceInstance:(id<FMServicesRouterServiceProtocol>)serviceInstance withName:(NSString *)serviceName;
+
+/**
+ * Unregister service instance.
+ */
+- (void)unregisterService:(NSString *)serviceName;
 
 /**
  * Call service, return NO if service cann't found, else YES.

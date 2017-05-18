@@ -10,7 +10,7 @@
 
 @interface FMServicesRouterModel : NSObject
 
-@property (nonatomic, weak) id<FMServicesRouterServiceProtocol> service;
+@property (nonatomic, strong) id<FMServicesRouterServiceProtocol> service;
 
 + (instancetype)modelWithService:(id<FMServicesRouterServiceProtocol>)service;
 
@@ -53,6 +53,12 @@
 - (void)registerServiceInstance:(__weak id<FMServicesRouterServiceProtocol>)serviceInstance withName:(NSString *)serviceName {
     if (serviceInstance && serviceName.length > 0) {
         self.services[serviceName] = [FMServicesRouterModel modelWithService:serviceInstance];
+    }
+}
+
+- (void)unregisterService:(NSString *)serviceName {
+    if (serviceName.length > 0) {
+        self.services[serviceName] = nil;
     }
 }
 

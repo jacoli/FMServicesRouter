@@ -6,7 +6,7 @@ Pod::Spec.new do |s|
   s.license      = "MIT"
   s.authors      = { "jacoli" => "jaco.lcg@gmail.com" }
   s.source       = { :git => "https://github.com/jacoli/FMServicesRouter.git", :tag => "1.0.0" }
-  s.frameworks   = 'Foundation',
+  s.frameworks   = 'Foundation'
   s.platform     = :ios, '7.0'
   s.source_files = 'source/*.{h,m}'
   s.requires_arc = true
